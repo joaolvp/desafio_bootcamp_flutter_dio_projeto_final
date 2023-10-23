@@ -1,8 +1,8 @@
-import 'package:brasil_fields/brasil_fields.dart';
+import 'dart:io';
+
 import 'package:desafio_dio_projeto_final/model/contatos.dart';
 import 'package:desafio_dio_projeto_final/repositories/contatos_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,119 +12,108 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  TextEditingController nomeController = TextEditingController();
-  TextEditingController cidadeController = TextEditingController();
-  TextEditingController telefoneController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  dynamic listaContatos;
+  dynamic listaComContatos;
+  buscarContatos() async {
+    listaContatos = await ContatosRepository().buscarContatos();
+    if (listaContatos.runtimeType == List<Contatos>) {
+      listaComContatos = listaContatos;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
-          children: [Text('Criação de Contatos '), Icon(Icons.person)],
-        ),
+        title: const Text("Lista de Contatos"),
         backgroundColor: const Color(0xff4A5043),
       ),
-      body: ListView(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(children: [
-              TextFormField(
-                controller: nomeController,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                    label: Text('Nome'), border: OutlineInputBorder()),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                controller: cidadeController,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                    label: Text('Cidade'), border: OutlineInputBorder()),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  TelefoneInputFormatter(),
-                ],
-                controller: telefoneController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    label: Text('Telefone'), border: OutlineInputBorder()),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                    label: Text('E-mail'), border: OutlineInputBorder()),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  const Text(
-                    ' Foto de Perfil: ',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.photo),
-                    style: const ButtonStyle(
-                        backgroundColor:
-                            MaterialStatePropertyAll(Color(0xff9AC2C9))),
-                  ),
-                  /* IconButton(onPressed: (){}, icon: const Icon(Icons.photo)) */
-                ],
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            ContatosRepository().criarContato(
-                                'teste',
-                                nomeController.text,
-                                cidadeController.text,
-                                telefoneController.text,
-                                emailController.text);
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: FutureBuilder(
+            future: buscarContatos(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return ListView.builder(
+                    itemCount: listaComContatos.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: GestureDetector(
+                          onTap: (){
+                            showModalBottomSheet(
+                            context: context,
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20))),
+                            builder: (context) {
+                              return Wrap(
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.edit),
+                                    title: const Text('Editar'),
+                                    onTap: () {
+                                      
+                                      /* cameraPhoto();
+                                      Navigator.pop(context); */
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(Icons.delete),
+                                    title: const Text('Excluir'),
+                                    onTap: () {
+                                      
+                                      /* galeriaPhoto();
+                                      Navigator.pop(context); */
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
                           },
-                          style: const ButtonStyle(
-                              backgroundColor:
-                                  MaterialStatePropertyAll(Color(0xff4A5043))),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Criar ",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              Icon(Icons.create)
-                            ],
-                          ))),
-                ],
-              )
-            ]),
-          ),
-        ],
+                          child: Card(
+                            elevation: 5,
+                            //color: Color(0xffeaefc8),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.all(10),
+                                  leading: ClipOval(
+                                      child: Image.file(
+                                    File(listaComContatos[index].fotoPerfil),
+                                    height: 60,
+                                    width: 60,
+                                    fit: BoxFit.cover,
+                                  )),
+                                  title: Text(listaComContatos[index].nome, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
+                                  subtitle: Text(listaComContatos[index].email),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(listaComContatos[index].cidade),
+                                      Text(listaComContatos[index].telefone),
+                                      
+                                    ],
+                                  ),                
+                                  )),
+                        ),
+                      );
+                    });
+              } else {
+                return const Center(
+                    child: CircularProgressIndicator(
+                  color: Color(0xffFFCB47),
+                ));
+              }
+            }),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: Color(0xffFFCB47),
-        child: const Icon(Icons.list),
+        splashColor: Color(0xff9AC2C9),
+        elevation: 30,
+        onPressed: () {
+          Navigator.pushNamed(context, '/cadastro');
+        },
+        backgroundColor: const Color(0xffFFCB47),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -1,9 +1,15 @@
+import 'package:desafio_dio_projeto_final/view/cadastro_contato_page.dart';
 import 'package:desafio_dio_projeto_final/view/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main(){
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: HomePage(),
+    /* home: HomePage(), */
+    initialRoute: "/",
+    routes: {
+      "/": (_) => const HomePage(),
+      '/cadastro': (_) => const CadastroContatoPage()
+    },
   ));
 }
