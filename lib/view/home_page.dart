@@ -40,61 +40,79 @@ class _HomePageState extends State<HomePage> {
                       return Container(
                         padding: EdgeInsets.only(bottom: 5),
                         child: GestureDetector(
-                          onTap: (){
+                          onTap: () {
+                            var teste =
+                                File(listaComContatos[index].fotoPerfil);
+                            print(teste.existsSync());
                             showModalBottomSheet(
-                            context: context,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20))),
-                            builder: (context) {
-                              return Wrap(
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(Icons.edit),
-                                    title: const Text('Editar'),
-                                    onTap: () {
-                                      
-                                      /* cameraPhoto();
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(20),
+                                        topRight: Radius.circular(20))),
+                                builder: (context) {
+                                  return Wrap(
+                                    children: [
+                                      ListTile(
+                                        leading: const Icon(Icons.edit),
+                                        title: const Text('Editar'),
+                                        onTap: () {
+                                          /* cameraPhoto();
                                       Navigator.pop(context); */
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(Icons.delete),
-                                    title: const Text('Excluir'),
-                                    onTap: () {
-                                      
-                                      /* galeriaPhoto();
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.delete),
+                                        title: const Text('Excluir'),
+                                        onTap: () {
+                                          /* galeriaPhoto();
                                       Navigator.pop(context); */
-                                    },
-                                  ),
-                                ],
-                              );
-                            });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
                           },
                           child: Card(
-                            elevation: 5,
-                            //color: Color(0xffeaefc8),
+                              elevation: 5,
+                              //color: Color(0xffeaefc8),
                               child: ListTile(
                                 contentPadding: const EdgeInsets.all(10),
-                                  leading: ClipOval(
-                                      child: Image.file(
-                                    File(listaComContatos[index].fotoPerfil),
-                                    height: 60,
-                                    width: 60,
-                                    fit: BoxFit.cover,
-                                  )),
-                                  title: Text(listaComContatos[index].nome, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),),
-                                  subtitle: Text(listaComContatos[index].email),
-                                  trailing: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(listaComContatos[index].cidade),
-                                      Text(listaComContatos[index].telefone),
-                                      
-                                    ],
-                                  ),                
-                                  )),
+                                leading:
+                                    File(listaComContatos[index].fotoPerfil) ==
+                                            true
+                                        ? ClipOval(
+                                            child: Image.file(
+                                            File(listaComContatos[index]
+                                                .fotoPerfil),
+                                            height: 60,
+                                            width: 60,
+                                            fit: BoxFit.cover,
+                                          ))
+                                        : const CircleAvatar(
+                                            radius: 30,
+                                            backgroundColor: Color(0xff9AC2C9),
+                                            child: Icon(
+                                              Icons.person,
+                                              size: 25,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                title: Text(
+                                  listaComContatos[index].nome,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                subtitle: Text(listaComContatos[index].email),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(listaComContatos[index].cidade),
+                                    Text(listaComContatos[index].telefone),
+                                  ],
+                                ),
+                              )),
                         ),
                       );
                     });
