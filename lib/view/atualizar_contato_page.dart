@@ -7,22 +7,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
-class CadastroContatoPage extends StatefulWidget {
-  const CadastroContatoPage({super.key});
+class AtualizarContatoPage extends StatefulWidget {
+  const AtualizarContatoPage({super.key});
 
   @override
-  State<CadastroContatoPage> createState() => _CadastroContatoPageState();
+  State<AtualizarContatoPage> createState() => _AtualizarContatoPageState();
 }
 
-class _CadastroContatoPageState extends State<CadastroContatoPage> {
+class _AtualizarContatoPageState extends State<AtualizarContatoPage> {
   TextEditingController nomeController = TextEditingController();
   TextEditingController cidadeController = TextEditingController();
   TextEditingController telefoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   String namePhoto = "";
   String pathPhoto = "";
-  File? _image;
+  dynamic _image;
   var isLoading = false;
+  var isFirst = true;
 
   cameraPhoto() async {
     final XFile? imgFile =
@@ -32,7 +33,7 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
     setState(() {
       namePhoto = imgFile.name;
       pathPhoto = imgFile.path;
-      _image = File(imgFile.path);
+      _image = File(pathPhoto);
     });
   }
 
@@ -44,21 +45,34 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
     setState(() {
       namePhoto = imgFile.name;
       pathPhoto = imgFile.path;
-      _image = File(imgFile.path);
+      _image = File(pathPhoto);
     });
   }
 
   sucessoerroDialog(String texto) {
     mostrarDialogCadastro(texto, context);
   }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final mapa = ModalRoute.of(context)!.settings.arguments as Map;
+
+    nomeController.text = mapa["nome"];
+    cidadeController.text = mapa["cidade"];
+    cidadeController.text = mapa["telefone"];
+    cidadeController.text = mapa["email"];
+    //pathPhoto = mapa["foto"];
+    print(_image);
+    if(mapa["foto"] != "" && isFirst == true){
+      _image = File(mapa["foto"]);
+      isFirst = false;
+    }
+
+
+    return  Scaffold(
       appBar: AppBar(
         title: const Row(
           children: [
-            Text('Criar Contato '),
+            Text('Atualizar Contato '),
           ],
         ),
         backgroundColor: const Color(0xff4A5043),
@@ -194,14 +208,15 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
                             setState(() {
                               isLoading = true;
                             });
-                            response = await ContatosRepository().criarContato(
+                            response = await ContatosRepository().atualizarContato(
+                                mapa["id"],
                                 pathPhoto,
                                 nomeController.text,
                                 cidadeController.text,
                                 telefoneController.text,
                                 emailController.text);
 
-                            if (response == 201) {
+                            if (response == 200) {
                               setState(() {
                                 isLoading = false;
                               });
@@ -210,13 +225,13 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
                               telefoneController.text = "";
                               emailController.text = "";
                               _image = null; */
-                              sucessoerroDialog('Criado com sucesso!');
+                              sucessoerroDialog('Atualizado com sucesso!');
                             } else {
                               setState(() {
                                 isLoading = false;
                               });
 
-                              return sucessoerroDialog('Erro ao criar contato');
+                              return sucessoerroDialog('Erro ao atualizar contato');
                             }
                           },
                           style: const ButtonStyle(
@@ -226,10 +241,10 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Salvar ",
+                                "Atualizar ",
                                 style: TextStyle(fontSize: 18),
                               ),
-                              Icon(Icons.save_sharp)
+                              Icon(Icons.autorenew)
                             ],
                           ))),
                 ],

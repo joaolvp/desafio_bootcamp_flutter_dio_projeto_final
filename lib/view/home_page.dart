@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:desafio_dio_projeto_final/model/contatos.dart';
 import 'package:desafio_dio_projeto_final/repositories/contatos_repository.dart';
+import 'package:desafio_dio_projeto_final/view/widgets/dialog_sucesso_erro_home.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,6 +20,11 @@ class _HomePageState extends State<HomePage> {
     if (listaContatos.runtimeType == List<Contatos>) {
       listaComContatos = listaContatos;
     }
+  }
+   sucessoerroDialog(String texto){
+    Navigator.pop(context);
+    mostrarDialogHome(texto, context);
+    setState(() {});
   }
 
   @override
@@ -38,12 +44,9 @@ class _HomePageState extends State<HomePage> {
                     itemCount: listaComContatos.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        padding: EdgeInsets.only(bottom: 5),
+                        padding: const EdgeInsets.only(bottom: 5),
                         child: GestureDetector(
                           onTap: () {
-                            var teste =
-                                File(listaComContatos[index].fotoPerfil);
-                            print(teste.existsSync());
                             showModalBottomSheet(
                                 context: context,
                                 shape: const RoundedRectangleBorder(
@@ -57,16 +60,31 @@ class _HomePageState extends State<HomePage> {
                                         leading: const Icon(Icons.edit),
                                         title: const Text('Editar'),
                                         onTap: () {
-                                          /* cameraPhoto();
-                                      Navigator.pop(context); */
+                                          Navigator.pushNamed(context, '/atualizar', 
+                                          arguments:{
+                                          "id": listaComContatos[index].objectId,
+                                          "foto": listaComContatos[index].fotoPerfil,
+                                          "nome": listaComContatos[index].nome,
+                                          "cidade": listaComContatos[index].cidade,
+                                          "telefone": listaComContatos[index].telefone,
+                                          "email": listaComContatos[index].email}
+                                          );
+
+
                                         },
                                       ),
                                       ListTile(
                                         leading: const Icon(Icons.delete),
                                         title: const Text('Excluir'),
-                                        onTap: () {
-                                          /* galeriaPhoto();
-                                      Navigator.pop(context); */
+                                        onTap: () async{
+                                          var response = await ContatosRepository().removerContato((listaComContatos[index].objectId));
+                                          if(response == 200){
+                                            sucessoerroDialog('Removido com sucesso'); 
+                                            
+                                            
+                                          }else{
+                                            return sucessoerroDialog('Erro ao remover');
+                                          }
                                         },
                                       ),
                                     ],
@@ -75,11 +93,10 @@ class _HomePageState extends State<HomePage> {
                           },
                           child: Card(
                               elevation: 5,
-                              //color: Color(0xffeaefc8),
                               child: ListTile(
                                 contentPadding: const EdgeInsets.all(10),
                                 leading:
-                                    File(listaComContatos[index].fotoPerfil) ==
+                                    File(listaComContatos[index].fotoPerfil).existsSync() ==
                                             true
                                         ? ClipOval(
                                             child: Image.file(
@@ -125,7 +142,7 @@ class _HomePageState extends State<HomePage> {
             }),
       ),
       floatingActionButton: FloatingActionButton(
-        splashColor: Color(0xff9AC2C9),
+        splashColor: const Color(0xff9AC2C9),
         elevation: 30,
         onPressed: () {
           Navigator.pushNamed(context, '/cadastro');
