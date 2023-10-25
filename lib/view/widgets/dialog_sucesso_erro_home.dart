@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 mostrarDialogHome(String texto, BuildContext context) {
     showDialog(
         context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black87,
         builder: (context) {
           return AlertDialog(
             title: Center(child: Text(texto)),

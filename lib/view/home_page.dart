@@ -21,7 +21,8 @@ class _HomePageState extends State<HomePage> {
       listaComContatos = listaContatos;
     }
   }
-   sucessoerroDialog(String texto){
+
+  sucessoerroDialog(String texto) {
     Navigator.pop(context);
     mostrarDialogHome(texto, context);
     setState(() {});
@@ -40,6 +41,12 @@ class _HomePageState extends State<HomePage> {
             future: buscarContatos(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
+                if (listaComContatos.length == 0) {
+                  print('pdfjasdos');
+                  return const Center(
+                    child: Text('Nenhum contato salvo :(', style: TextStyle(fontSize: 18),),
+                  );
+                }
                 return ListView.builder(
                     itemCount: listaComContatos.length,
                     itemBuilder: (context, index) {
@@ -60,30 +67,41 @@ class _HomePageState extends State<HomePage> {
                                         leading: const Icon(Icons.edit),
                                         title: const Text('Editar'),
                                         onTap: () {
-                                          Navigator.pushNamed(context, '/atualizar', 
-                                          arguments:{
-                                          "id": listaComContatos[index].objectId,
-                                          "foto": listaComContatos[index].fotoPerfil,
-                                          "nome": listaComContatos[index].nome,
-                                          "cidade": listaComContatos[index].cidade,
-                                          "telefone": listaComContatos[index].telefone,
-                                          "email": listaComContatos[index].email}
-                                          );
-
-
+                                          Navigator.pushNamed(
+                                              context, '/atualizar',
+                                              arguments: {
+                                                "id": listaComContatos[index]
+                                                    .objectId,
+                                                "foto": listaComContatos[index]
+                                                    .fotoPerfil,
+                                                "nome": listaComContatos[index]
+                                                    .nome,
+                                                "cidade":
+                                                    listaComContatos[index]
+                                                        .cidade,
+                                                "telefone":
+                                                    listaComContatos[index]
+                                                        .telefone,
+                                                "email": listaComContatos[index]
+                                                    .email
+                                              });
                                         },
                                       ),
                                       ListTile(
                                         leading: const Icon(Icons.delete),
                                         title: const Text('Excluir'),
-                                        onTap: () async{
-                                          var response = await ContatosRepository().removerContato((listaComContatos[index].objectId));
-                                          if(response == 200){
-                                            sucessoerroDialog('Removido com sucesso'); 
-                                            
-                                            
-                                          }else{
-                                            return sucessoerroDialog('Erro ao remover');
+                                        onTap: () async {
+                                          var response =
+                                              await ContatosRepository()
+                                                  .removerContato(
+                                                      (listaComContatos[index]
+                                                          .objectId));
+                                          if (response == 200) {
+                                            sucessoerroDialog(
+                                                'Removido com sucesso');
+                                          } else {
+                                            return sucessoerroDialog(
+                                                'Erro ao remover');
                                           }
                                         },
                                       ),
@@ -96,7 +114,8 @@ class _HomePageState extends State<HomePage> {
                               child: ListTile(
                                 contentPadding: const EdgeInsets.all(10),
                                 leading:
-                                    File(listaComContatos[index].fotoPerfil).existsSync() ==
+                                    File(listaComContatos[index].fotoPerfil)
+                                                .existsSync() ==
                                             true
                                         ? ClipOval(
                                             child: Image.file(

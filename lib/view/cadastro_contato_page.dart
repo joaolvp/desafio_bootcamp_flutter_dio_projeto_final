@@ -19,10 +19,61 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
   TextEditingController cidadeController = TextEditingController();
   TextEditingController telefoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  String namePhoto = "";
   String pathPhoto = "";
   File? _image;
   var isLoading = false;
+  dynamic validadorNome = "";
+  dynamic validadorTelefone = "";
+  dynamic validadorEmail = "";
+  dynamic _errorNome;
+  dynamic _errorTelefone;
+  dynamic _errorEmail;
+
+
+  String? _validarNome(String? value) {
+    final RegExp nameExp = RegExp(r'^[A-Za-z ]+$');
+    if (value?.isEmpty == true || !nameExp.hasMatch(value!)) {
+      setState(() {
+        _errorNome = 'Digite um nome válido!';
+      });
+      return "not ok";
+    }
+    setState(() {
+      _errorNome = "";
+    });
+    return 'ok';
+  }
+
+  String? _validarTelefone(String? value) {
+    final RegExp nameExp = RegExp(r'\(\d{2}\) \d{4,5}-\d{4}');
+    if (value?.isEmpty == true || !nameExp.hasMatch(value!)) {
+      setState(() {
+        _errorTelefone = 'Digite um telefone válido! (xx)xxxx-xxxx ou (xx)xxxxx-xxxx';
+      });
+      return "not ok";
+    }
+    setState(() {
+      _errorTelefone = "";
+    });
+    return "ok";
+  }
+
+  String? _validarEmail(String? value) {
+    final RegExp nameExp =
+        RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-zA-Z]{2,})$');
+    if (value?.isEmpty == true || !nameExp.hasMatch(value!)) {
+      
+      setState(() {
+        _errorEmail = 'Digite um e-mail válido!';
+      });
+      return "not ok";
+      
+    }
+    setState(() {
+      _errorEmail = "";
+    });
+    return "ok";
+  }
 
   cameraPhoto() async {
     final XFile? imgFile =
@@ -30,7 +81,6 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
     if (imgFile == null) return;
 
     setState(() {
-      namePhoto = imgFile.name;
       pathPhoto = imgFile.path;
       _image = File(imgFile.path);
     });
@@ -42,16 +92,15 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
     if (imgFile == null) return;
 
     setState(() {
-      namePhoto = imgFile.name;
       pathPhoto = imgFile.path;
       _image = File(imgFile.path);
     });
   }
 
-  sucessoerroDialog(String texto) {
-    mostrarDialogCadastro(texto, context);
+  sucessoerroDialog(String texto, bool backToHome) {
+    mostrarDialogCadastroAtt(texto, context, backToHome);
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,8 +118,7 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
             padding: const EdgeInsets.all(10),
             child: Column(children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .center, 
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _image != null
                       ? ClipOval(
@@ -145,8 +193,12 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
               TextFormField(
                 controller: nomeController,
                 keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                    label: Text('Nome'), border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                    label: const Text('Nome*'), border: const OutlineInputBorder(),
+                    floatingLabelStyle: const TextStyle(color: Colors.black54),
+                    errorText: _errorNome != "" ? _errorNome : null, 
+                    labelStyle: TextStyle(color: _errorNome == "" ? Colors.red: Colors.black54),
+                    ),
               ),
               const SizedBox(
                 height: 20,
@@ -155,7 +207,7 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
                 controller: cidadeController,
                 keyboardType: TextInputType.name,
                 decoration: const InputDecoration(
-                    label: Text('Cidade'), border: OutlineInputBorder()),
+                    label: Text('Cidade'), border: OutlineInputBorder(),),
               ),
               const SizedBox(
                 height: 20,
@@ -167,8 +219,12 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
                 ],
                 controller: telefoneController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    label: Text('Telefone'), border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                    label: const Text('Telefone*'), border: const OutlineInputBorder(),
+                    floatingLabelStyle: const TextStyle(color:Colors.black54),
+                    errorText: _errorTelefone != "" ? _errorTelefone : null, 
+                    labelStyle: TextStyle(color: _errorTelefone == "" ? Colors.red: Colors.black54),
+                    ),
               ),
               const SizedBox(
                 height: 20,
@@ -176,8 +232,12 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                    label: Text('E-mail'), border: OutlineInputBorder()),
+                decoration: InputDecoration(
+                    label: const Text('E-mail*'), border: const OutlineInputBorder(),
+                    floatingLabelStyle: const TextStyle(color:Colors.black54),
+                    errorText: _errorEmail != "" ? _errorEmail : null,  
+                    labelStyle: TextStyle(color: _errorEmail == "" ? Colors.red: Colors.black54),
+                    ),
               ),
               const SizedBox(
                 height: 20,
@@ -191,32 +251,44 @@ class _CadastroContatoPageState extends State<CadastroContatoPage> {
                       child: ElevatedButton(
                           onPressed: () async {
                             dynamic response;
-                            setState(() {
-                              isLoading = true;
-                            });
-                            response = await ContatosRepository().criarContato(
-                                pathPhoto,
-                                nomeController.text,
-                                cidadeController.text,
-                                telefoneController.text,
-                                emailController.text);
+                            
 
-                            if (response == 201) {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              /* nomeController.text = "";
-                              cidadeController.text = "";
-                              telefoneController.text = "";
-                              emailController.text = "";
-                              _image = null; */
-                              sucessoerroDialog('Criado com sucesso!');
-                            } else {
-                              setState(() {
-                                isLoading = false;
-                              });
+                            validadorNome = _validarNome(nomeController.text);
+                            validadorTelefone =
+                                _validarTelefone(telefoneController.text);
+                            validadorEmail =
+                                _validarEmail(emailController.text);
 
-                              return sucessoerroDialog('Erro ao criar contato');
+                            print(validadorNome);
+                            print(validadorTelefone);
+                            print(validadorEmail);
+
+                            if (validadorNome == "ok" &&
+                                validadorTelefone == "ok" &&
+                                validadorEmail == "ok") {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              response = await ContatosRepository()
+                                  .criarContato(
+                                      pathPhoto,
+                                      nomeController.text,
+                                      cidadeController.text,
+                                      telefoneController.text,
+                                      emailController.text);
+                              if (response == 201) {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                sucessoerroDialog('Criado com sucesso!', true);
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+
+                                return sucessoerroDialog(
+                                    'Erro ao criar contato', false);
+                              }
                             }
                           },
                           style: const ButtonStyle(

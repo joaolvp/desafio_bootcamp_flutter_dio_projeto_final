@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-mostrarDialogCadastro(String texto, BuildContext context) {
+mostrarDialogCadastroAtt(String texto, BuildContext context, bool backToHome) {
     showDialog(
         context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black87,
         builder: (context) {
           return AlertDialog(
             title: Center(child: Text(texto)),
@@ -12,7 +14,10 @@ mostrarDialogCadastro(String texto, BuildContext context) {
                   style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(Color(0xff4A5043))),
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                      if(backToHome == true){
+                        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                      }
+                      
                     },
                     child: const Text('Fechar')),
               ),
