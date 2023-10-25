@@ -1,16 +1,27 @@
-# desafio_dio_projeto_final
+# Lista de Contatos
 
-A new Flutter project.
+Desafio DIO feito em Flutter de uma Lista de Contatos utilizando o Back4app.
 
-## Getting Started
+## Cadastrando contato
 
-This project is a starting point for a Flutter application.
+[cadastrando_user.webm](https://github.com/joaolvp/desafio_bootcamp_flutter_dio_projeto_final/assets/9539250/33079296-5967-485b-8457-0de5cb6d8923)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Removendo contato
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+[excluindo_user.webm](https://github.com/joaolvp/desafio_bootcamp_flutter_dio_projeto_final/assets/9539250/cc2a85e7-9091-41f4-a4a7-14557112e5dd)
+
+## Atualiando contato
+
+[atualizando_user.webm](https://github.com/joaolvp/desafio_bootcamp_flutter_dio_projeto_final/assets/9539250/f30ff554-77a8-4262-aa6a-32dd90eeb507)
+
+
+
+
+## 🔗 Contatos
+
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/joaolvp)
+
+[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/jo%C3%A3o-lucas-viana-peruzzo-602035226)
+
+[![Perfil DIO](https://img.shields.io/badge/-Meu%20Perfil%20na%20DIO-993399?style=for-the-badge)](https://web.dio.me/users/joaolvpj)
